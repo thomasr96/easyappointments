@@ -20,7 +20,7 @@ services:
       - ${APP_HOST}:80:80
     environment:
       - DB_HOST=database:3306
-      - APP_URL=localhost
+      - APP_URL=35.182.153.85
     depends_on:
       - database
     env_file:
