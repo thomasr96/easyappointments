@@ -290,6 +290,9 @@ class Customers_Model extends CI_Model {
         {
             throw new Exception('Invalid argument provided as $customer_id : ' . $customer_id);
         }
+
+   
+
         return $this->db->get_where('ea_users', ['id' => $customer_id])->row_array();
     }
 

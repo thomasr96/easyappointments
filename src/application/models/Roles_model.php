@@ -42,14 +42,19 @@ class Roles_Model extends CI_Model {
     public function get_privileges($slug)
     {
         $privileges = $this->db->get_where('ea_roles', ['slug' => $slug])->row_array();
-        unset($privileges['id'], $privileges['name'], $privileges['slug'], $privileges['is_admin']);
+        
+        
 
+
+        unset($privileges['id'], $privileges['name'], $privileges['slug'], $privileges['is_admin']);
+       
         // Convert the int values to bool so that is easier to check whether a
         // user has the required privileges for a specific action.
         foreach ($privileges as &$value)
         {
+            
             $privileges_number = $value;
-
+            
             $value = [
                 'view' => FALSE,
                 'add' => FALSE,

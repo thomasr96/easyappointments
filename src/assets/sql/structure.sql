@@ -135,6 +135,25 @@ CREATE TABLE IF NOT EXISTS `ea_users` (
 )
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
+    
+CREATE TABLE IF NOT EXISTS `ea_machines` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `machine_id` VARCHAR(512),
+    `machine_type` VARCHAR(256),
+    `make` VARCHAR(256),
+    `manufacture_year` INT(12),
+    `email` VARCHAR(512),
+    `current_location` VARCHAR(256),
+    -- `current_city` VARCHAR(256),
+    -- `current_state` VARCHAR(128),
+    -- `zip_code` VARCHAR(64),
+    `notes` TEXT,
+    `id_roles` INT(11) NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `id_roles` (`id_roles`)
+)
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;
 
 
 CREATE TABLE IF NOT EXISTS `ea_user_settings` (

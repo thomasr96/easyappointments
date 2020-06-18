@@ -30,7 +30,10 @@ class User_Model extends CI_Model {
      */
     public function get_settings($user_id)
     {
+        
         $user = $this->db->get_where('ea_users', ['id' => $user_id])->row_array();
+       
+
         $user['settings'] = $this->db->get_where('ea_user_settings', ['id_users' => $user_id])->row_array();
         unset($user['settings']['id_users']);
         return $user;
@@ -130,6 +133,7 @@ class User_Model extends CI_Model {
 
         $user = $this->db->get_where('ea_users', ['id' => $user_id])->row_array();
 
+        
         return $user['first_name'] . ' ' . $user['last_name'];
     }
 
