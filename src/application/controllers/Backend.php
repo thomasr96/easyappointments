@@ -54,11 +54,13 @@ class Backend extends CI_Controller {
         {
             return;
         }
+        
 
         $this->load->model('appointments_model');
         $this->load->model('providers_model');
         $this->load->model('services_model');
         $this->load->model('customers_model');
+        $this->load->model('machines_model');
         $this->load->model('settings_model');
         $this->load->model('roles_model');
         $this->load->model('user_model');
