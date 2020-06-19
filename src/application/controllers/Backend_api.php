@@ -980,6 +980,8 @@ class Backend_api extends CI_Controller {
      */
     public function ajax_delete_machine()
     {
+        
+
         try
         {
             if ($this->privileges[PRIV_CUSTOMERS]['delete'] == FALSE)
@@ -988,7 +990,10 @@ class Backend_api extends CI_Controller {
             }
 
             $this->load->model('machines_model');
-            $this->machines_model->delete($this->input->post('machine_id'));
+
+            $this->machines_model->delete($_POST['machine_id']);
+            
+            // $this->machines_model->delete($this->input->post('machine_id'));
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode(AJAX_SUCCESS));

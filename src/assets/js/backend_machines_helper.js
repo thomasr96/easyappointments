@@ -107,6 +107,7 @@
          * Event: Add Machine Button "Click"
          */
         $('#add-customer').click(function () {
+        
             instance.resetForm();
             $('#add-edit-delete-group').hide();
             $('#save-cancel-group').show();
@@ -169,6 +170,7 @@
          * Event: Delete Machine Button "Click"
          */
         $('#delete-customer').click(function () {
+          
             var machineId = $('#customer-id').val();
             var buttons = [
                 {
@@ -221,12 +223,13 @@
      * @param {Number} id Record id to be deleted.
      */
     MachinesHelper.prototype.delete = function (id) {
+        
         var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_delete_machine';
         var postData = {
             csrfToken: GlobalVariables.csrfToken,
-            customer_id: id
+            machine_id: id
         };
-
+        
         $.post(postUrl, postData, function (response) {
             if (!GeneralFunctions.handleAjaxExceptions(response)) {
                 return;

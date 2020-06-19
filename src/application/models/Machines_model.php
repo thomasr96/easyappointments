@@ -262,6 +262,11 @@ class Machines_Model extends CI_Model {
      */
     public function delete($machine_id)
     {
+        
+        
+  
+
+
         if ( ! is_numeric($machine_id))
         {
             throw new Exception('Invalid argument type $machine_id: ' . $machine_id);

@@ -82,6 +82,10 @@ class Appointments extends CI_Controller {
             $terms_and_conditions_content = $this->settings_model->get_setting('terms_and_conditions_content');
             $display_privacy_policy = $this->settings_model->get_setting('display_privacy_policy');
             $privacy_policy_content = $this->settings_model->get_setting('privacy_policy_content');
+            
+            // require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
+            // $f = new FirePHP();
+            // $f->log($available_services);
 
             // Remove the data that are not needed inside the $available_providers array.
             foreach ($available_providers as $index => $provider)
@@ -94,6 +98,8 @@ class Appointments extends CI_Controller {
                 ];
                 $available_providers[$index] = $stripped_data;
             }
+
+           
 
             // If an appointment hash is provided then it means that the customer
             // is trying to edit a registered appointment record.
@@ -194,6 +200,8 @@ class Appointments extends CI_Controller {
 
             $appointment = $records[0];
             $provider = $this->providers_model->get_row($appointment['id_users_provider']);
+            
+
             $customer = $this->customers_model->get_row($appointment['id_users_customer']);
             $service = $this->services_model->get_row($appointment['id_services']);
 

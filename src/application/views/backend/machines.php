@@ -69,7 +69,7 @@
                     <?php if ($privileges[PRIV_CUSTOMERS]['delete'] === TRUE): ?>
                     <button id="delete-customer" class="btn btn-default" disabled="disabled">
                         <span class="glyphicon glyphicon-remove"></span>
-                        <?= lang('delete') ?>
+                            <?= lang('delete') ?>
                     </button>
                     <?php endif ?>
                 </div>
@@ -95,23 +95,18 @@
                     <div id="form-message" class="alert" style="display:none;"></div>
 
                     <div class="form-group">
-                        <label class="control-label" for="machine-type">Type</label>
-                        <input id="machine-type" class="form-control required">
-                    
+                        <label for="select-provider">
+                            Machine Type
+                        </label>
 
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Action
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Separated link</a>
-                        </div>
-                    </div>
-
+                        <select id="select-machine-type" class="form-control">
+                            <?php
+                            foreach($machine_types as $machine_type) {
+                                echo '<option value="' . $machine_type['id'] . '">' . $machine_type['type'] . '</option>';
+                            }
+                            ?>
+                        </select>
+     
                     </div>
 
                     <div class="form-group">

@@ -135,6 +135,12 @@ class Backend extends CI_Controller {
         
         // $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
         $view['active_menu'] = PRIV_CUSTOMERS;
+        $view['machine_types'] = [['id'=> 1, 'type'=>'Aircraft'], 
+                                ['id'=> 2, 'type'=>'Automobile'], 
+                                ['id'=> 3, 'type'=>'Yacht'], 
+                                ['id'=> 1, 'type'=>'Heavy Machinery']];
+
+
         $view['company_name'] = $this->settings_model->get_setting('company_name');
         $view['date_format'] = $this->settings_model->get_setting('date_format');
         $view['time_format'] = $this->settings_model->get_setting('time_format');
