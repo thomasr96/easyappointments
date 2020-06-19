@@ -198,7 +198,9 @@ class Machines_Model extends CI_Model {
     public function validate($machine)
     {
         $this->load->helper('data_validation');
-
+        require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
+        $f = new FirePHP();
+        $f -> log($machine);
         // If a machine id is provided, check whether the record
         // exist in the database.
         if (isset($machine['id']))
@@ -354,6 +356,8 @@ class Machines_Model extends CI_Model {
      */
     public function get_batch($where_clause = '')
     {
+        
+
         $machines_role_id = $this->get_machines_role_id();
 
         if ($where_clause != '')

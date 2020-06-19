@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `ea_machines` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `machine_id` VARCHAR(512),
     `machine_type` VARCHAR(256),
-    `make` VARCHAR(256),
+    `machine_make` VARCHAR(256),
     `manufacture_year` INT(12),
     `email` VARCHAR(512),
     `current_location` VARCHAR(256),
@@ -161,7 +161,10 @@ ON DELETE CASCADE
 ON UPDATE CASCADE;
 
 ALTER TABLE `ea_appointments`
-    ADD CONSTRAINT `appointments_machine` FOREIGN KEY (`id_machine`) REFERENCES `ea_machines` (`id`)
+ADD `id_users_machine` INT(11);
+
+ALTER TABLE `ea_appointments`
+    ADD CONSTRAINT `appointments_machine` FOREIGN KEY (`id_users_machine`) REFERENCES `ea_machines` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE;
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 

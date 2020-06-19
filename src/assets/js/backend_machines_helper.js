@@ -145,15 +145,15 @@
         $('#save-customer').click(function () {
             var machine = {
                 machine_type: $('#machine-type').val(),
-                last_name: $('#machine-id').val(),
+                machine_id: $('#machine-physical-id').val(),
                 email: $('#email').val(),
                 current_location: $('#current-location').val(),
                 machine_make: $('#machine-make').val(),
-                city: $('#city').val(),
-                zip_code: $('#zip-code').val(),
+                manufacture_year: $('#manufacture-year').val(),
+                
                 notes: $('#notes').val()
             };
-
+            // console.log(machine);
             if ($('#customer-id').val() != '') {
                 machine.id = $('#customer-id').val();
             }
@@ -196,11 +196,11 @@
      *
      * @param {Object} machine Contains the machine data.
      */
-    MachinesHelper.prototype.save = function (customer) {
-        var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_save_customer';
+    MachinesHelper.prototype.save = function (machine) {
+        var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_save_machine';
         var postData = {
             csrfToken: GlobalVariables.csrfToken,
-            customer: JSON.stringify(customer)
+            machine: JSON.stringify(machine)
         };
 
         $.post(postUrl, postData, function (response) {
@@ -216,12 +216,12 @@
     };
 
     /**
-     * Delete a customer record from database.
+     * Delete a machine record from database.
      *
      * @param {Number} id Record id to be deleted.
      */
     MachinesHelper.prototype.delete = function (id) {
-        var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_delete_customer';
+        var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_delete_machine';
         var postData = {
             csrfToken: GlobalVariables.csrfToken,
             customer_id: id
@@ -312,7 +312,7 @@
         $('#current-location').val(machine.current_location);
         $('#machine-make').val(machine.machine_make);
         $('#city').val(machine.city);
-        $('#manufacture-year').val(machine.zip_code);
+        $('#manufacture-year').val(machine.manufacture_year);
         $('#notes').val(machine.notes);
         
         $('#customer-appointments').empty();
@@ -350,12 +350,12 @@
     MachinesHelper.prototype.filter = function (key, selectId, display) {
         display = display || false;
         // console.log(key + '\n bob' + selectId + '\n' +  display)
-        var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_filter_customers';
+        var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_filter_machines';
         var postData = {
             csrfToken: GlobalVariables.csrfToken,
             key: key
         };
-
+        
         $.post(postUrl, postData, function (response) {
             if (!GeneralFunctions.handleAjaxExceptions(response)) {
                 return;
@@ -386,19 +386,19 @@
      *
      * @return {String} Returns the record HTML code.
      */
-    MachinesHelper.prototype.getFilterHtml = function (customer) {
+    MachinesHelper.prototype.getFilterHtml = function (machine) {
    
-        var name = customer.first_name + ' ' + customer.last_name;
-        var info = customer.email;
-        info = (customer.phone_number != '' && customer.phone_number != null)
-            ? info + ', ' + customer.phone_number : info;
+        // var name = customer.first_name + ' ' + customer.last_name;
+        // var info = customer.email;
+        // info = (customer.phone_number != '' && customer.phone_number != null)
+            // ? info + ', ' + customer.phone_number : info;
 
         var html =
-            '<div class="entry" data-id="' + customer.id + '">' +
+            '<div class="entry" data-id="' + machine.id + '">' +
             '<strong>' +
-            name +
+            machine.machine_make + ' ' + machine.machine_id + 
             '</strong><br>' +
-            info +
+            'info' +
             '</div><hr>';
 
         return html;
@@ -424,7 +424,7 @@
                 return false;
             }
         });
-
+        
         if (display) {
             $.each(this.filterResults, function (index, machine) {
                 if (machine.id == id) {

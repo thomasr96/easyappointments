@@ -610,19 +610,19 @@ class Backend_api extends CI_Controller {
 
             $key = $this->db->escape_str($this->input->post('key'));
             $key = strtoupper($key);
+            
 
             $where_clause =
-                '(first_name LIKE upper("%' . $key . '%") OR ' .
-                'last_name  LIKE upper("%' . $key . '%") OR ' .
+                '(machine_id LIKE upper("%' . $key . '%") OR ' .
+                'machine_type  LIKE upper("%' . $key . '%") OR ' .
+                'machine_make LIKE upper("%' . $key . '%") OR ' .
+                'manufacture_year LIKE upper("%' . $key . '%") OR ' .
                 'email LIKE upper("%' . $key . '%") OR ' .
-                'phone_number LIKE upper("%' . $key . '%") OR ' .
-                'address LIKE upper("%' . $key . '%") OR ' .
-                'city LIKE upper("%' . $key . '%") OR ' .
-                'zip_code LIKE upper("%' . $key . '%") OR ' .
+                'current_location LIKE upper("%' . $key . '%") OR ' .
                 'notes LIKE upper("%' . $key . '%"))';
 
             $machines = $this->machines_model->get_batch($where_clause);
-
+            
             foreach ($machines as &$machine)
             {
                 $appointments = $this->appointments_model
@@ -643,6 +643,9 @@ class Backend_api extends CI_Controller {
         }
         catch (Exception $exc)
         {
+            require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
+            $f = new FirePHP();
+            $f->log('bob');
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode(['exceptions' => [exceptionToJavaScript($exc)]]));

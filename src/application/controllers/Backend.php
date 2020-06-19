@@ -123,13 +123,13 @@ class Backend extends CI_Controller {
         {
             return;
         }
-
+        
         $this->load->model('providers_model');
         $this->load->model('machines_model');
         $this->load->model('secretaries_model');
         $this->load->model('services_model');
         $this->load->model('settings_model');
-        // $this->load->model('user_model');
+        $this->load->model('user_model');
 
         $view['base_url'] = $this->config->item('base_url');
         

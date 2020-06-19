@@ -97,6 +97,21 @@
                     <div class="form-group">
                         <label class="control-label" for="machine-type">Type</label>
                         <input id="machine-type" class="form-control required">
+                    
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Separated link</a>
+                        </div>
+                    </div>
+
                     </div>
 
                     <div class="form-group">
@@ -129,6 +144,8 @@
                         <label class="control-label" for="notes"><?= lang('notes') ?></label>
                         <textarea id="notes" rows="4" class="form-control"></textarea>
                     </div>
+
+                    
 
                     <p class="text-center">
                         <em id="form-message" class="text-danger"><?= lang('fields_are_required') ?></em>
