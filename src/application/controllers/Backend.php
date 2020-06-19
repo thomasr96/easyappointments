@@ -115,6 +115,58 @@ class Backend extends CI_Controller {
      *
      * In this page the user can manage all the customer records of the system.
      */
+    public function machines()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/machines'));
+
+        if ( ! $this->_has_privileges(PRIV_CUSTOMERS))
+        {
+            return;
+        }
+
+        $this->load->model('providers_model');
+        $this->load->model('machines_model');
+        $this->load->model('secretaries_model');
+        $this->load->model('services_model');
+        $this->load->model('settings_model');
+        // $this->load->model('user_model');
+
+        $view['base_url'] = $this->config->item('base_url');
+        
+        // $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
+        $view['active_menu'] = PRIV_CUSTOMERS;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+        $view['machines'] = $this->machines_model->get_batch();
+        $view['available_providers'] = $this->providers_model->get_available_providers();
+        $view['available_services'] = $this->services_model->get_available_services();
+
+        if ($this->session->userdata('role_slug') === DB_SLUG_SECRETARY)
+        {
+            require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
+            $f = new FirePHP();
+            $f->log('id');
+
+            $secretary = $this->secretaries_model->get_row($this->session->userdata('user_id'));
+            $view['secretary_providers'] = $secretary['providers'];
+        }
+        else
+        {
+            $view['secretary_providers'] = [];
+        }
+
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/machines', $view);
+        $this->load->view('backend/footer', $view);
+    }
+     /**
+     * Display the backend customers page.
+     *
+     * In this page the user can manage all the customer records of the system.
+     */
     public function customers()
     {
         $this->session->set_userdata('dest_url', site_url('backend/customers'));
@@ -126,6 +178,59 @@ class Backend extends CI_Controller {
 
         $this->load->model('providers_model');
         $this->load->model('customers_model');
+        $this->load->model('secretaries_model');
+        $this->load->model('services_model');
+        $this->load->model('settings_model');
+        // $this->load->model('user_model');
+
+        $view['base_url'] = $this->config->item('base_url');
+        
+        // $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
+        $view['active_menu'] = PRIV_CUSTOMERS;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+        $view['customers'] = $this->customers_model->get_batch();
+        $view['available_providers'] = $this->providers_model->get_available_providers();
+        $view['available_services'] = $this->services_model->get_available_services();
+
+        if ($this->session->userdata('role_slug') === DB_SLUG_SECRETARY)
+        {
+            require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
+            $f = new FirePHP();
+            $f->log('id');
+            
+            $secretary = $this->secretaries_model->get_row($this->session->userdata('user_id'));
+            $view['secretary_providers'] = $secretary['providers'];
+        }
+        else
+        {
+            $view['secretary_providers'] = [];
+        }
+
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/customers', $view);
+        $this->load->view('backend/footer', $view);
+    }
+
+    /**
+     * Display the backend customers page.
+     *
+     * In this page the user can manage all the customer records of the system.
+     */
+    public function customers_test()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/machines'));
+
+        if ( ! $this->_has_privileges(PRIV_CUSTOMERS))
+        {
+            return;
+        }
+
+        $this->load->model('providers_model');
+        $this->load->model('machines_model');
         $this->load->model('secretaries_model');
         $this->load->model('services_model');
         $this->load->model('settings_model');
@@ -154,9 +259,10 @@ class Backend extends CI_Controller {
         $this->set_user_data($view);
 
         $this->load->view('backend/header', $view);
-        $this->load->view('backend/customers', $view);
+        $this->load->view('backend/machines', $view);
         $this->load->view('backend/footer', $view);
     }
+
 
     /**
      * Displays the backend services page.

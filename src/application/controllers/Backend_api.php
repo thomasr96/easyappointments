@@ -585,6 +585,69 @@ class Backend_api extends CI_Controller {
                 ->set_output(json_encode(['exceptions' => [exceptionToJavaScript($exc)]]));
         }
     }
+    /**
+     * [AJAX] Filter the machines records with the given key string.
+     *
+     * Required POST Parameters:
+     *
+     * - string $_POST['key'] The filter key string.
+     *
+     * Outputs the search results.
+     */
+    public function ajax_filter_machines()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_CUSTOMERS]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $this->load->model('appointments_model');
+            $this->load->model('services_model');
+            $this->load->model('providers_model');
+            $this->load->model('machines_model');
+
+            $key = $this->db->escape_str($this->input->post('key'));
+            $key = strtoupper($key);
+
+            $where_clause =
+                '(first_name LIKE upper("%' . $key . '%") OR ' .
+                'last_name  LIKE upper("%' . $key . '%") OR ' .
+                'email LIKE upper("%' . $key . '%") OR ' .
+                'phone_number LIKE upper("%' . $key . '%") OR ' .
+                'address LIKE upper("%' . $key . '%") OR ' .
+                'city LIKE upper("%' . $key . '%") OR ' .
+                'zip_code LIKE upper("%' . $key . '%") OR ' .
+                'notes LIKE upper("%' . $key . '%"))';
+
+            $machines = $this->machines_model->get_batch($where_clause);
+
+            foreach ($machines as &$machine)
+            {
+                $appointments = $this->appointments_model
+                    ->get_batch(['id_users_machine' => $machine['id']]);
+
+                foreach ($appointments as &$appointment)
+                {
+                    $appointment['service'] = $this->services_model->get_row($appointment['id_services']);
+                    $appointment['provider'] = $this->providers_model->get_row($appointment['id_users_provider']);
+                }
+
+                $machine['appointments'] = $appointments;
+            }
+
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($machines));
+        }
+        catch (Exception $exc)
+        {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['exceptions' => [exceptionToJavaScript($exc)]]));
+        }
+    }
 
     /**
      * [AJAX] Filter the customer records with the given key string.
@@ -836,6 +899,45 @@ class Backend_api extends CI_Controller {
         }
     }
 
+     /**
+     * [AJAX] Save (insert or update) a machine record.
+     *
+     * Require POST Parameters:
+     *
+     * - array $_POST['machine'] JSON encoded array that contains the machine's data.
+     */
+    public function ajax_save_machine()
+    {
+        try
+        {
+            $this->load->model('machines_model');
+            $machine = json_decode($this->input->post('machine'), TRUE);
+
+            $REQUIRED_PRIV = ( ! isset($machine['id']))
+                ? $this->privileges[PRIV_CUSTOMERS]['add']
+                : $this->privileges[PRIV_CUSTOMERS]['edit'];
+            if ($REQUIRED_PRIV == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $machine_id = $this->machines_model->add($machine);
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status' => AJAX_SUCCESS,
+                    'id' => $machine_id
+                ]));
+        }
+        catch (Exception $exc)
+        {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['exceptions' => [exceptionToJavaScript($exc)]]));
+        }
+    }
+
+
     /**
      * [AJAX] Delete customer from database.
      *
@@ -854,6 +956,36 @@ class Backend_api extends CI_Controller {
 
             $this->load->model('customers_model');
             $this->customers_model->delete($this->input->post('customer_id'));
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(AJAX_SUCCESS));
+        }
+        catch (Exception $exc)
+        {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['exceptions' => [exceptionToJavaScript($exc)]]));
+        }
+    }
+
+    /**
+     * [AJAX] Delete machine from database.
+     *
+     * Required POST Parameters:
+     *
+     * - int $_POST['machine_id'] Machine record id to be deleted.
+     */
+    public function ajax_delete_machine()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_CUSTOMERS]['delete'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $this->load->model('machines_model');
+            $this->machines_model->delete($this->input->post('machine_id'));
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode(AJAX_SUCCESS));

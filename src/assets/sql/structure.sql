@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `ea_users` (
 )
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
-    
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 CREATE TABLE IF NOT EXISTS `ea_machines` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `machine_id` VARCHAR(512),
@@ -155,6 +155,16 @@ CREATE TABLE IF NOT EXISTS `ea_machines` (
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
 
+ALTER TABLE `ea_machines`
+ADD CONSTRAINT `machines_roles` FOREIGN KEY (`id_roles`) REFERENCES `ea_roles` (`id`)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
+ALTER TABLE `ea_appointments`
+    ADD CONSTRAINT `appointments_machine` FOREIGN KEY (`id_machine`) REFERENCES `ea_machines` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 
 CREATE TABLE IF NOT EXISTS `ea_user_settings` (
     `id_users` INT(11) NOT NULL,
