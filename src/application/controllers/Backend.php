@@ -138,7 +138,7 @@ class Backend extends CI_Controller {
         $view['machine_types'] = [['id'=> 1, 'type'=>'Aircraft'], 
                                 ['id'=> 2, 'type'=>'Automobile'], 
                                 ['id'=> 3, 'type'=>'Yacht'], 
-                                ['id'=> 1, 'type'=>'Heavy Machinery']];
+                                ['id'=> 4, 'type'=>'Heavy Machinery']];
 
 
         $view['company_name'] = $this->settings_model->get_setting('company_name');
@@ -150,9 +150,6 @@ class Backend extends CI_Controller {
 
         if ($this->session->userdata('role_slug') === DB_SLUG_SECRETARY)
         {
-            require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
-            $f = new FirePHP();
-            $f->log('id');
 
             $secretary = $this->secretaries_model->get_row($this->session->userdata('user_id'));
             $view['secretary_providers'] = $secretary['providers'];

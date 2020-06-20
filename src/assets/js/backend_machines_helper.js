@@ -112,7 +112,7 @@
             $('#add-edit-delete-group').hide();
             $('#save-cancel-group').show();
             $('.record-details').find('input, textarea').prop('readonly', false);
-
+            $('.record-details').find('select').prop('disabled', false);
             $('#filter-customers button').prop('disabled', true);
             $('#filter-customers .results').css('color', '#AAA');
         });
@@ -124,7 +124,7 @@
             $('.record-details').find('input, textarea').prop('readonly', false);
             $('#add-edit-delete-group').hide();
             $('#save-cancel-group').show();
-
+            $('.record-details').find('select').prop('disabled', false);
             $('#filter-customers button').prop('disabled', true);
             $('#filter-customers .results').css('color', '#AAA');
         });
@@ -145,7 +145,7 @@
          */
         $('#save-customer').click(function () {
             var machine = {
-                machine_type: $('#machine-type').val(),
+                machine_type: $('#select-machine-type').val(),
                 machine_id: $('#machine-physical-id').val(),
                 email: $('#email').val(),
                 current_location: $('#current-location').val(),
@@ -204,7 +204,7 @@
             csrfToken: GlobalVariables.csrfToken,
             machine: JSON.stringify(machine)
         };
-
+        console.log(machine);
         $.post(postUrl, postData, function (response) {
             if (!GeneralFunctions.handleAjaxExceptions(response)) {
                 return;
@@ -288,12 +288,15 @@
         $('.record-details').find('input, textarea').val('');
         $('.record-details').find('input, textarea').prop('readonly', true);
 
+        $('.record-details').find('select').prop('disabled', true);
+        $('.record-details').find('select').val('null');
+
         $('#customer-appointments').empty();
         $('#appointment-details').toggleClass('hidden', true).empty();
         $('#edit-customer, #delete-customer').prop('disabled', true);
         $('#add-edit-delete-group').show();
         $('#save-cancel-group').hide();
-
+        
         $('.record-details .has-error').removeClass('has-error');
         $('.record-details #form-message').hide();
 
@@ -308,8 +311,9 @@
      * @param {Object} machine Contains the machine record data.
      */
     MachinesHelper.prototype.display = function (machine) {
+        
         $('#customer-id').val(machine.id);
-        $('#machine-type').val(machine.machine_type);
+        $('#select-machine-type').val(machine.machine_type);
         $('#machine-physical-id').val(machine.machine_id);
         $('#email').val(machine.email);
         $('#current-location').val(machine.current_location);

@@ -70,7 +70,7 @@
                     <button id="delete-customer" class="btn btn-default" disabled="disabled">
                         <span class="glyphicon glyphicon-remove"></span>
                             <?= lang('delete') ?>
-                    </button>
+                    </button> 
                     <?php endif ?>
                 </div>
 
@@ -100,6 +100,8 @@
                         </label>
 
                         <select id="select-machine-type" class="form-control">
+
+                            <option value='null'>Select a Category</option>
                             <?php
                             foreach($machine_types as $machine_type) {
                                 echo '<option value="' . $machine_type['id'] . '">' . $machine_type['type'] . '</option>';

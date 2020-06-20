@@ -269,7 +269,7 @@
         $('#services .save-cancel-group').hide();
         $('#edit-service, #delete-service').prop('disabled', true);
         $('#services .record-details').find('input, textarea').prop('readonly', true);
-        $('#services .record-details').find('select').prop('disabled', true);
+        // $('#services .record-details').find('select').prop('disabled', true);
 
         $('#filter-services .selected').removeClass('selected');
         $('#filter-services button').prop('disabled', false);
