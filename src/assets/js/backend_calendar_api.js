@@ -29,19 +29,19 @@ window.BackendCalendarApi = window.BackendCalendarApi || {};
      *
      * @param {Object} appointment Contain the new appointment data. The ID of the appointment MUST be
      * already included. The rest values must follow the database structure.
-     * @param {Object} customer Optional, contains the customer data.
+     * @param {Object} machine Optional, contains the machine data.
      * @param {Function} successCallback Optional, if defined, this function is going to be executed on post success.
      * @param {Function} errorCallback Optional, if defined, this function is going to be executed on post failure.
      */
-    exports.saveAppointment = function (appointment, customer, successCallback, errorCallback) {
+    exports.saveAppointment = function (appointment, machine, successCallback, errorCallback) {
         var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_save_appointment';
         var data = {
             csrfToken: GlobalVariables.csrfToken,
             appointment_data: JSON.stringify(appointment)
         };
 
-        if (customer !== undefined) {
-            data.customer_data = JSON.stringify(customer);
+        if (machine !== undefined) {
+            data.machine_data = JSON.stringify(machine);
         }
 
         $.ajax({

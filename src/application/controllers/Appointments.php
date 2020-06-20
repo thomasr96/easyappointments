@@ -83,9 +83,7 @@ class Appointments extends CI_Controller {
             $display_privacy_policy = $this->settings_model->get_setting('display_privacy_policy');
             $privacy_policy_content = $this->settings_model->get_setting('privacy_policy_content');
             
-            // require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
-            // $f = new FirePHP();
-            // $f->log($available_services);
+     
 
             // Remove the data that are not needed inside the $available_providers array.
             foreach ($available_providers as $index => $provider)
@@ -155,7 +153,7 @@ class Appointments extends CI_Controller {
                 'time_format' => $time_format,
                 'appointment_data' => $appointment,
                 'provider_data' => $provider,
-                'customer_data' => $customer,
+                'machine_data' => $machine,
                 'display_cookie_notice' => $display_cookie_notice,
                 'cookie_notice_content' => $cookie_notice_content,
                 'display_terms_and_conditions' => $display_terms_and_conditions,

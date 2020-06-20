@@ -21,7 +21,7 @@
         'dateFormat'            : <?= json_encode($date_format) ?>,
         'timeFormat'            : <?= json_encode($time_format) ?>,
         'editAppointment'       : <?= json_encode($edit_appointment) ?>,
-        'customers'             : <?= json_encode($customers) ?>,
+        'machines'             : <?= json_encode($machines) ?>,
         'secretaryProviders'    : <?= json_encode($secretary_providers) ?>,
         'calendarView'          : <?= json_encode($calendar_view) ?>,
         'user'                  : {
@@ -220,46 +220,57 @@
                         <input id="customer-id" type="hidden">
 
                         <div class="row">
+
+                            
                             <div class="col-xs-12 col-sm-6">
+
                                 <div class="form-group">
-                                    <label for="first-name" class="control-label"><?= lang('first_name') ?> *</label>
-                                    <input id="first-name" class="required form-control">
+                                    <label for="select-provider">
+                                        Machine Type
+                                    </label>
+
+                                    <select id="select-machine-type" class="form-control">
+
+                                        <option value='null'>Select a Category</option>
+                                        <?php
+                                        foreach($machine_types as $machine_type) {
+                                            echo '<option value="' . $machine_type['id'] . '">' . $machine_type['type'] . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="last-name" class="control-label"><?= lang('last_name') ?> *</label>
-                                    <input id="last-name" class="required form-control">
+                                    <label class="control-label" for="machine-physical-id">ID</label>
+                                    <input id="machine-physical-id" class="form-control required">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="email" class="control-label"><?= lang('email') ?> *</label>
-                                    <input id="email" class="required form-control">
+                                    <label class="control-label" for="email">Email</label>
+                                    <input id="email" class="form-control required">
                                 </div>
 
+
                                 <div class="form-group">
-                                    <label for="phone-number" class="control-label"><?= lang('phone_number') ?> *</label>
-                                    <input id="phone-number" class="required form-control">
+                                    <label class="control-label" for="current-location">Current Location</label>
+                                    <input id="current-location" class="form-control">
                                 </div>
                             </div>
                             <div class="col-xs-12 col-sm-6">
                                 <div class="form-group">
-                                    <label for="address" class="control-label"><?= lang('address') ?></label>
-                                    <input id="address" class="form-control">
+                                    <label class="control-label" for="machine-make">Make</label>
+                                    <input id="machine-make" class="form-control">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="city" class="control-label"><?= lang('city') ?></label>
-                                    <input id="city" class="form-control">
+                                    <label class="control-label" for="manufacture-year">Manufacture Year</label>
+                                    <input id="manufacture-year" class="form-control">
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="zip-code" class="control-label"><?= lang('zip_code') ?></label>
-                                    <input id="zip-code" class="form-control">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="customer-notes" class="control-label"><?= lang('notes') ?></label>
-                                    <textarea id="customer-notes" rows="2" class="form-control"></textarea>
+                                    <label class="control-label" for="notes"><?= lang('notes') ?></label>
+                                    <textarea id="customer-notes" rows="4" class="form-control"></textarea>
                                 </div>
                             </div>
                         </div>

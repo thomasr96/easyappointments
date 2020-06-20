@@ -42,13 +42,13 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
             if (!_validateAppointmentForm()) {
                 return;
             }
-
+            
             // Prepare appointment data for AJAX request.
             var $dialog = $('#manage-appointment');
 
             // ID must exist on the object in order for the model to update the record and not to perform
             // an insert operation.
-
+        
             var startDatetime = $dialog.find('#start-datetime').datetimepicker('getDate').toString('yyyy-MM-dd HH:mm:ss');
             var endDatetime = $dialog.find('#end-datetime').datetimepicker('getDate').toString('yyyy-MM-dd HH:mm:ss');
 
@@ -65,24 +65,25 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
                 // Set the id value, only if we are editing an appointment.
                 appointment.id = $dialog.find('#appointment-id').val();
             }
-
-            var customer = {
-                first_name: $dialog.find('#first-name').val(),
-                last_name: $dialog.find('#last-name').val(),
+            
+            var machine = {
+                machine_id: $dialog.find('#machine-physical-id').val(),
+                machine_type: $dialog.find('#select-machine-type').val(),
                 email: $dialog.find('#email').val(),
-                phone_number: $dialog.find('#phone-number').val(),
-                address: $dialog.find('#address').val(),
-                city: $dialog.find('#city').val(),
-                zip_code: $dialog.find('#zip-code').val(),
+                current_location: $dialog.find('#current-location').val(),
+                machine_make: $dialog.find('#machine-make').val(),
+                manufacture_year: $dialog.find('#manufacture-year').val(),
                 notes: $dialog.find('#customer-notes').val()
             };
+            
+            
 
             if ($dialog.find('#customer-id').val() !== '') {
                 // Set the id value, only if we are editing an appointment.
-                customer.id = $dialog.find('#customer-id').val();
-                appointment.id_users_customer = customer.id;
+                machine.id = $dialog.find('#customer-id').val();
+                appointment.id_users_machine = machine.id;
             }
-
+            
             // Define success callback.
             var successCallback = function (response) {
                 if (!GeneralFunctions.handleAjaxExceptions(response)) {
@@ -106,13 +107,13 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
 
             // Define error callback.
             var errorCallback = function () {
-                $dialog.find('.modal-message').text(EALang.service_communication_error);
+                $dialog.find('.modal-message').text(EALang.service_communication_errors);
                 $dialog.find('.modal-message').addClass('alert-danger').removeClass('hidden');
                 $dialog.find('.modal-body').scrollTop(0);
             };
-
+            
             // Save appointment data.
-            BackendCalendarApi.saveAppointment(appointment, customer, successCallback, errorCallback);
+            BackendCalendarApi.saveAppointment(appointment, machine, successCallback, errorCallback);
         });
 
         /**
@@ -173,7 +174,7 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
         });
 
         /**
-         * Event: Pick Existing Customer Button "Click"
+         * Event: Pick Existing Machine Button "Click"
          */
         $('#select-customer').click(function () {
             var $list = $('#existing-customers-list');
@@ -184,9 +185,9 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
                 $list.slideDown('slow');
                 $('#filter-existing-customers').fadeIn('slow');
                 $('#filter-existing-customers').val('');
-                $.each(GlobalVariables.customers, function (index, c) {
-                    $list.append('<div data-id="' + c.id + '">'
-                        + c.first_name + ' ' + c.last_name + '</div>');
+                $.each(GlobalVariables.machines, function (index, m) {
+                    $list.append('<div data-id="' + m.id + '">'
+                        + m.machine_make + ' ' + m.machine_id + '</div>');
                 });
             } else {
                 $list.slideUp('slow');
@@ -196,22 +197,22 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
         });
 
         /**
-         * Event: Select Existing Customer From List "Click"
+         * Event: Select Existing Machine From List "Click"
          */
         $('#manage-appointment').on('click', '#existing-customers-list div', function () {
             var id = $(this).attr('data-id');
 
-            $.each(GlobalVariables.customers, function (index, c) {
-                if (c.id == id) {
-                    $('#customer-id').val(c.id);
-                    $('#first-name').val(c.first_name);
-                    $('#last-name').val(c.last_name);
-                    $('#email').val(c.email);
-                    $('#phone-number').val(c.phone_number);
-                    $('#address').val(c.address);
-                    $('#city').val(c.city);
-                    $('#zip-code').val(c.zip_code);
-                    $('#customer-notes').val(c.notes);
+            $.each(GlobalVariables.machines, function (index, m) {
+                // 
+                if (m.id == id) {
+                    $('#customer-id').val(m.id);
+                    $('#select-machine-type').val(m.machine_type);
+                    $('#machine-physical-id').val(m.machine_id);
+                    $('#email').val(m.email);
+                    $('#current-location').val(m.current_location);
+                    $('#machine-make').val(m.machine_make);
+                    $('#manufacture-year').val(m.manufacture_year);
+                    $('#customer-notes').val(m.notes);
                     return false;
                 }
             });
@@ -220,18 +221,18 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
         });
 
         /**
-         * Event: Filter Existing Customers "Change"
+         * Event: Filter Existing Machines "Change"
          */
         $('#filter-existing-customers').keyup(function () {
             var key = $(this).val().toLowerCase();
             var $list = $('#existing-customers-list');
-            var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_filter_customers';
+            var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_filter_machines';
             var postData = {
                 csrfToken: GlobalVariables.csrfToken,
                 key: key
             };
 
-            // Try to get the updated customer list.
+            // Try to get the updated machine list.
             $.ajax({
                 type: 'POST',
                 url: postUrl,
@@ -241,36 +242,38 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
                 global: false,
                 success: function (response) {
                     $list.empty();
-                    $.each(response, function (index, c) {
-                        $list.append('<div data-id="' + c.id + '">'
-                            + c.first_name + ' ' + c.last_name + '</div>');
+                    $.each(response, function (index, m) {
+                        $list.append('<div data-id="' + m.id + '">'
+                            + m.machine_make + ' ' + m.machine_id + '</div>');
 
-                        // Verify if this customer is on the old customer list.
-                        var result = $.grep(GlobalVariables.customers,
+                        // Verify if this machine is on the old machine list.
+                        var result = $.grep(GlobalVariables.machines,
                             function (e) {
-                                return e.id == c.id;
+                                return e.id == m.id;
                             });
 
-                        // Add it to the customer list.
+                        // Add it to the machine list.
                         if (result.length == 0) {
-                            GlobalVariables.customers.push(c);
+                            GlobalVariables.machines.push(m);
                         }
                     });
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // If there is any error on the request, search by the local client database.
                     $list.empty();
-                    $.each(GlobalVariables.customers, function (index, c) {
-                        if (c.first_name.toLowerCase().indexOf(key) != -1
-                            || c.last_name.toLowerCase().indexOf(key) != -1
-                            || c.email.toLowerCase().indexOf(key) != -1
-                            || c.phone_number.toLowerCase().indexOf(key) != -1
-                            || c.address.toLowerCase().indexOf(key) != -1
-                            || c.city.toLowerCase().indexOf(key) != -1
-                            || c.zip_code.toLowerCase().indexOf(key) != -1
-                            || c.notes.toLowerCase().indexOf(key) != -1) {
-                            $list.append('<div data-id="' + c.id + '">'
-                                + c.first_name + ' ' + c.last_name + '</div>');
+// 
+// 
+
+                    $.each(GlobalVariables.machines, function (index, m) {
+                        if (m.machine_type.toLowerCase().indexOf(key) != -1
+                            || m.machine_id.toLowerCase().indexOf(key) != -1
+                            || m.email.toLowerCase().indexOf(key) != -1
+                            || m.current_location.toLowerCase().indexOf(key) != -1
+                            || m.machine_make.toLowerCase().indexOf(key) != -1
+                            || m.manufacture_year.toLowerCase().indexOf(key) != -1
+                            || m.notes.toLowerCase().indexOf(key) != -1) {
+                            $list.append('<div data-id="' + m.id + '">'
+                            + m.machine_make + ' ' + m.machine_id + '</div>');
                         }
                     });
                 }
@@ -319,11 +322,12 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
         });
 
         /**
-         * Event: Enter New Customer Button "Click"
+         * Event: Enter New Machine Button "Click"
          */
+        
         $('#new-customer').click(function () {
-            $('#manage-appointment').find('#customer-id, #first-name, #last-name, #email, '
-                + '#phone-number, #address, #city, #zip-code, #customer-notes').val('');
+            $('#manage-appointment').find('#customer-id, #select-machine-type, #machine-physical-id, #email, '
+                + '#current-location, #machine-make, #manufacture-year, #customer-notes').val('');
         });
     }
 
@@ -364,7 +368,7 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
             }
         });
 
-        // Close existing customers-filter frame.
+        // Close existing machines-filter frame.
         $('#existing-customers-list').slideUp('slow');
         $('#filter-existing-customers').fadeOut('slow');
         $('#select-customer').text(EALang.select);

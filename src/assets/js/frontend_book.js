@@ -153,7 +153,7 @@ window.FrontendBook = window.FrontendBook || {};
         } else {
             var $selectProvider = $('#select-provider');
             var $selectService = $('#select-service');
-console.log('boberta');
+
             // Check if a specific service was selected (via URL parameter).
             var selectedServiceId = GeneralFunctions.getUrlParameter(location.href, 'service');
 

@@ -216,6 +216,8 @@ class Customers_Model extends CI_Model {
             || ! isset($customer['email'])
             || ! isset($customer['phone_number']))
         {
+            
+
             throw new Exception('Not all required fields are provided: '
                 . print_r($customer, TRUE));
         }

@@ -30,6 +30,7 @@ class Machines_Model extends CI_Model {
      */
     public function add($machine)
     {
+        
         // Validate the machine data before doing anything.
         $this->validate($machine);
 
@@ -197,10 +198,11 @@ class Machines_Model extends CI_Model {
      */
     public function validate($machine)
     {
+        
         $this->load->helper('data_validation');
-        require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
-        $f = new FirePHP();
-        $f -> log($machine);
+        
+
+
         // If a machine id is provided, check whether the record
         // exist in the database.
         if (isset($machine['id']))
@@ -231,6 +233,7 @@ class Machines_Model extends CI_Model {
 
         // When inserting a record the email address must be unique.
         $machine_id = (isset($machine['id'])) ? $machine['id'] : '';
+        
 
         $num_rows = $this->db
             ->select('*')
@@ -241,13 +244,13 @@ class Machines_Model extends CI_Model {
             ->where('ea_machines.id <>', $machine_id)
             ->get()
             ->num_rows();
-
+            
         if ($num_rows > 0)
         {
             throw new Exception('Given email address belongs to another machine record. '
                 . 'Please use a different email.');
         }
-
+        
         return TRUE;
     }
 
@@ -292,7 +295,9 @@ class Machines_Model extends CI_Model {
      * @throws Exception If $machine_id argumnet is invalid.
      */
     public function get_row($machine_id)
-    {
+    {   
+       
+    
         if ( ! is_numeric($machine_id))
         {
             throw new Exception('Invalid argument provided as $machine_id : ' . $machine_id);

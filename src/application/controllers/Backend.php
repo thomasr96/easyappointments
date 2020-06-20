@@ -23,6 +23,7 @@ class Backend extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
+        
         $this->load->library('session');
 
         // Set user's selected language.
@@ -66,7 +67,11 @@ class Backend extends CI_Controller {
         $this->load->model('user_model');
         $this->load->model('secretaries_model');
 
-       
+        $view['machine_types'] = [['id'=> 1, 'type'=>'Aircraft'], 
+                                ['id'=> 2, 'type'=>'Automobile'], 
+                                ['id'=> 3, 'type'=>'Yacht'], 
+                                ['id'=> 4, 'type'=>'Heavy Machinery']];
+
 
         $view['base_url'] = $this->config->item('base_url');
         $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
@@ -77,7 +82,9 @@ class Backend extends CI_Controller {
         $view['company_name'] = $this->settings_model->get_setting('company_name');
         $view['available_providers'] = $this->providers_model->get_available_providers();
         $view['available_services'] = $this->services_model->get_available_services();
-        $view['customers'] = $this->customers_model->get_batch();
+        // $view['customers'] = $this->customers_model->get_batch();
+        $view['machines'] = $this->machines_model->get_batch();
+
         $user = $this->user_model->get_settings($this->session->userdata('user_id'));
         $view['calendar_view'] = $user['settings']['calendar_view'];
         $this->set_user_data($view);
@@ -199,9 +206,7 @@ class Backend extends CI_Controller {
 
         if ($this->session->userdata('role_slug') === DB_SLUG_SECRETARY)
         {
-            require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
-            $f = new FirePHP();
-            $f->log('id');
+      
             
             $secretary = $this->secretaries_model->get_row($this->session->userdata('user_id'));
             $view['secretary_providers'] = $secretary['providers'];

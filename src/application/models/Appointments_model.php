@@ -30,6 +30,8 @@ class Appointments_Model extends CI_Model {
      */
     public function add($appointment)
     {
+        
+
         // Validate the appointment data before doing anything.
         $this->validate($appointment);
 
@@ -50,7 +52,7 @@ class Appointments_Model extends CI_Model {
      * Check if a particular appointment record already exists.
      *
      * This method checks whether the given appointment already exists in the database. It doesn't search with the id,
-     * but by using the following fields: "start_datetime", "end_datetime", "id_users_provider", "id_users_customer",
+     * but by using the following fields: "start_datetime", "end_datetime", "id_users_provider", "id_users_machine",
      * "id_services".
      *
      * @param array $appointment Associative array with the appointment's data. Each key has the same name with the
@@ -65,7 +67,7 @@ class Appointments_Model extends CI_Model {
         if ( ! isset($appointment['start_datetime'])
             || ! isset($appointment['end_datetime'])
             || ! isset($appointment['id_users_provider'])
-            || ! isset($appointment['id_users_customer'])
+            || ! isset($appointment['id_users_machines'])
             || ! isset($appointment['id_services']))
         {
             throw new Exception('Not all appointment field values are provided: '
@@ -76,7 +78,7 @@ class Appointments_Model extends CI_Model {
             'start_datetime' => $appointment['start_datetime'],
             'end_datetime' => $appointment['end_datetime'],
             'id_users_provider' => $appointment['id_users_provider'],
-            'id_users_customer' => $appointment['id_users_customer'],
+            'id_users_machine' => $appointment['id_users_machine'],
             'id_services' => $appointment['id_services'],
         ])
             ->num_rows();
@@ -130,7 +132,7 @@ class Appointments_Model extends CI_Model {
      * Find the database id of an appointment record.
      *
      * The appointment data should include the following fields in order to get the unique id from the database:
-     * "start_datetime", "end_datetime", "id_users_provider", "id_users_customer", "id_services".
+     * "start_datetime", "end_datetime", "id_users_provider", "id_users_machine", "id_services".
      *
      * IMPORTANT: The record must already exists in the database, otherwise an exception is raised.
      *
@@ -147,7 +149,7 @@ class Appointments_Model extends CI_Model {
             'start_datetime' => $appointment['start_datetime'],
             'end_datetime' => $appointment['end_datetime'],
             'id_users_provider' => $appointment['id_users_provider'],
-            'id_users_customer' => $appointment['id_users_customer'],
+            'id_users_machine' => $appointment['id_users_machine'],
             'id_services' => $appointment['id_services']
         ]);
 
@@ -173,6 +175,7 @@ class Appointments_Model extends CI_Model {
     public function validate($appointment)
     {
         $this->load->helper('data_validation');
+        
 
         // If a appointment id is given, check whether the record exists
         // in the database.
@@ -205,6 +208,7 @@ class Appointments_Model extends CI_Model {
             ->where('ea_users.id', $appointment['id_users_provider'])
             ->where('ea_roles.slug', DB_SLUG_PROVIDER)
             ->get()->num_rows();
+        
         if ($num_rows == 0)
         {
             throw new Exception('Appointment provider id is invalid.');
@@ -212,17 +216,23 @@ class Appointments_Model extends CI_Model {
 
         if ($appointment['is_unavailable'] == FALSE)
         {
-            // Check if the customer's id is valid.
+            
+            // $firephp->log(1);
+
+            // Check if the machine's id is valid.
             $num_rows = $this->db
                 ->select('*')
-                ->from('ea_users')
-                ->join('ea_roles', 'ea_roles.id = ea_users.id_roles', 'inner')
-                ->where('ea_users.id', $appointment['id_users_customer'])
-                ->where('ea_roles.slug', DB_SLUG_CUSTOMER)
+                ->from('ea_machines')
+                ->join('ea_roles', 'ea_roles.id = ea_machines.id_roles', 'inner')
+                ->where('ea_machines.id', $appointment['id_users_machine'])
+                ->where('ea_roles.slug', DB_SLUG_MACHINE)
                 ->get()->num_rows();
+            
+                
             if ($num_rows == 0)
             {
-                throw new Exception('Appointment customer id is invalid.');
+                
+                throw new Exception('Appointment machine id is invalid.');
             }
 
             // Check if the service id is valid.
@@ -526,8 +536,8 @@ class Appointments_Model extends CI_Model {
             ['id' => $appointment['id_services']])->row_array();
         $appointment['provider'] = $this->db->get_where('ea_users',
             ['id' => $appointment['id_users_provider']])->row_array();
-        $appointment['customer'] = $this->db->get_where('ea_users',
-            ['id' => $appointment['id_users_customer']])->row_array();
+        $appointment['machine'] = $this->db->get_where('ea_machines',
+            ['id' => $appointment['id_users_machine']])->row_array();
         return $appointment;
     }
 }

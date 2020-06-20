@@ -63,6 +63,7 @@ window.Backend = window.Backend || {};
     exports.DB_SLUG_PROVIDER = 'provider';
     exports.DB_SLUG_SECRETARY = 'secretary';
     exports.DB_SLUG_CUSTOMER = 'customer';
+    exports.DB_SLUG_MACHINE = 'customer';
 
     exports.PRIV_VIEW = 1;
     exports.PRIV_ADD = 2;

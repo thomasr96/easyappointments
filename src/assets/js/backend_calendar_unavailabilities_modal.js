@@ -29,6 +29,7 @@ window.BackendCalendarUnavailabilitiesModal = window.BackendCalendarUnavailabili
          * Stores the unavailable period changes or inserts a new record.
          */
         $('#manage-unavailable #save-unavailable').click(function () {
+            
             var $dialog = $('#manage-unavailable');
             $dialog.find('.has-error').removeClass('has-error');
             var start = $dialog.find('#unavailable-start').datetimepicker('getDate');
@@ -98,7 +99,7 @@ window.BackendCalendarUnavailabilitiesModal = window.BackendCalendarUnavailabili
                 GeneralFunctions.displayMessageBox('Communication Error', 'Unfortunately ' +
                     'the operation could not complete due to server communication errors.');
 
-                $dialog.find('.modal-message').txt(EALang.service_communication_error);
+                $dialog.find('.modal-message').txt('EALang.service_communication_error');
                 $dialog.find('.modal-message').addClass('alert-danger').removeClass('hidden');
             };
 

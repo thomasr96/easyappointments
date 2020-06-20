@@ -72,7 +72,7 @@ class Backend_api extends CI_Controller {
         {
             $this->output->set_content_type('application/json');
             $this->load->model('appointments_model');
-            $this->load->model('customers_model');
+            $this->load->model('machines_model');
             $this->load->model('services_model');
             $this->load->model('providers_model');
 
@@ -96,7 +96,8 @@ class Backend_api extends CI_Controller {
             {
                 $appointment['provider'] = $this->providers_model->get_row($appointment['id_users_provider']);
                 $appointment['service'] = $this->services_model->get_row($appointment['id_services']);
-                $appointment['customer'] = $this->customers_model->get_row($appointment['id_users_customer']);
+                
+                $appointment['machine'] = $this->machines_model->get_row($appointment['id_users_machines']);
             }
 
             $userId = $this->session->userdata('user_id');
@@ -187,7 +188,7 @@ class Backend_api extends CI_Controller {
             $this->load->model('appointments_model');
             $this->load->model('providers_model');
             $this->load->model('services_model');
-            $this->load->model('customers_model');
+            $this->load->model('machines_model');
 
             if ($this->input->post('filter_type') == FILTER_TYPE_PROVIDER)
             {
@@ -216,7 +217,7 @@ class Backend_api extends CI_Controller {
             {
                 $appointment['provider'] = $this->providers_model->get_row($appointment['id_users_provider']);
                 $appointment['service'] = $this->services_model->get_row($appointment['id_services']);
-                $appointment['customer'] = $this->customers_model->get_row($appointment['id_users_customer']);
+                $appointment['machine'] = $this->machines_model->get_row($appointment['id_users_machine']);
             }
 
             // Get unavailable periods (only for provider).
@@ -250,39 +251,47 @@ class Backend_api extends CI_Controller {
      * Required POST Parameters:
      *
      * - array $_POST['appointment_data'] (OPTIONAL) Array with the appointment data.
-     * - array $_POST['customer_data'] (OPTIONAL) Array with the customer data.
+     * - array $_POST['machine_data'] (OPTIONAL) Array with the machine data.
      */
     public function ajax_save_appointment()
     {
         try
         {
+            require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
+        $firephp = new FirePHP;
             $this->load->model('appointments_model');
             $this->load->model('providers_model');
             $this->load->model('services_model');
-            $this->load->model('customers_model');
+            $this->load->model('machines_model');
             $this->load->model('settings_model');
-
-            // :: SAVE CUSTOMER CHANGES TO DATABASE
-            if ($this->input->post('customer_data'))
+            
+            // :: SAVE machine CHANGES TO DATABASE
+            if ($_POST['machine_data'])
             {
-                $customer = json_decode($this->input->post('customer_data'), TRUE);
-
-                $REQUIRED_PRIV = ( ! isset($customer['id']))
+                
+                $machine = json_decode($_POST['machine_data'], TRUE);
+                // $machine = ;
+                
+                $REQUIRED_PRIV = ( ! isset($machine['id']))
                     ? $this->privileges[PRIV_CUSTOMERS]['add']
                     : $this->privileges[PRIV_CUSTOMERS]['edit'];
                 if ($REQUIRED_PRIV == FALSE)
                 {
                     throw new Exception('You do not have the required privileges for this task.');
                 }
-
-                $customer['id'] = $this->customers_model->add($customer);
+                
+                $machine['id'] = $this->machines_model->add($machine);
+                
             }
-
+            
             // :: SAVE APPOINTMENT CHANGES TO DATABASE
-            if ($this->input->post('appointment_data'))
+            if ($_POST['appointment_data'])
             {
-                $appointment = json_decode($this->input->post('appointment_data'), TRUE);
+            
+                $appointment = json_decode($_POST['appointment_data'], TRUE);
 
+                // $appointment = json_decode($this->input->post('appoinZtment_data'), TRUE);
+                
                 $REQUIRED_PRIV = ( ! isset($appointment['id']))
                     ? $this->privileges[PRIV_APPOINTMENTS]['add']
                     : $this->privileges[PRIV_APPOINTMENTS]['edit'];
@@ -292,21 +301,21 @@ class Backend_api extends CI_Controller {
                 }
 
                 $manage_mode = isset($appointment['id']);
-                // If the appointment does not contain the customer record id, then it
-                // means that is is going to be inserted. Get the customer's record id.
-                if ( ! isset($appointment['id_users_customer']))
+                // If the appointment does not contain the machine record id, then it
+                // means that is is going to be inserted. Get the machine's record id.
+                if ( ! isset($appointment['id_users_machine']))
                 {
-                    $appointment['id_users_customer'] = $customer['id'];
+                    $appointment['id_users_machine'] = $machine['id'];
                 }
-
                 $appointment['id'] = $this->appointments_model->add($appointment);
+                
             }
 
             $appointment = $this->appointments_model->get_row($appointment['id']);
             $provider = $this->providers_model->get_row($appointment['id_users_provider']);
-            $customer = $this->customers_model->get_row($appointment['id_users_customer']);
+            $machine = $this->machines_model->get_row($appointment['id_users_machine']);
             $service = $this->services_model->get_row($appointment['id_services']);
-
+            
             $company_settings = [
                 'company_name' => $this->settings_model->get_setting('company_name'),
                 'company_link' => $this->settings_model->get_setting('company_link'),
@@ -315,40 +324,40 @@ class Backend_api extends CI_Controller {
                 'time_format' => $this->settings_model->get_setting('time_format')
             ];
 
-            // :: SYNC APPOINTMENT CHANGES WITH GOOGLE CALENDAR
-            try
-            {
-                $google_sync = $this->providers_model->get_setting('google_sync',
-                    $appointment['id_users_provider']);
+            // // :: SYNC APPOINTMENT CHANGES WITH GOOGLE CALENDAR
+            // try
+            // {
+            //     $google_sync = $this->providers_model->get_setting('google_sync',
+            //         $appointment['id_users_provider']);
 
-                if ($google_sync == TRUE)
-                {
-                    $google_token = json_decode($this->providers_model->get_setting('google_token',
-                        $appointment['id_users_provider']));
+            //     if ($google_sync == TRUE)
+            //     {
+            //         $google_token = json_decode($this->providers_model->get_setting('google_token',
+            //             $appointment['id_users_provider']));
 
-                    $this->load->library('Google_sync');
-                    $this->google_sync->refresh_token($google_token->refresh_token);
+            //         $this->load->library('Google_sync');
+            //         $this->google_sync->refresh_token($google_token->refresh_token);
 
-                    if ($appointment['id_google_calendar'] == NULL)
-                    {
-                        $google_event = $this->google_sync->add_appointment($appointment, $provider,
-                            $service, $customer, $company_settings);
-                        $appointment['id_google_calendar'] = $google_event->id;
-                        $this->appointments_model->add($appointment); // Store google calendar id.
-                    }
-                    else
-                    {
-                        $this->google_sync->update_appointment($appointment, $provider,
-                            $service, $customer, $company_settings);
-                    }
-                }
-            }
-            catch (Exception $exc)
-            {
-                $warnings[] = exceptionToJavaScript($exc);
-            }
+            //         if ($appointment['id_google_calendar'] == NULL)
+            //         {
+            //             $google_event = $this->google_sync->add_appointment($appointment, $provider,
+            //                 $service, $machine, $company_settings);
+            //             $appointment['id_google_calendar'] = $google_event->id;
+            //             $this->appointments_model->add($appointment); // Store google calendar id.
+            //         }
+            //         else
+            //         {
+            //             $this->google_sync->update_appointment($appointment, $provider,
+            //                 $service, $machine, $company_settings);
+            //         }
+            //     }
+            // }
+            // catch (Exception $exc)
+            // {
+            //     $warnings[] = exceptionToJavaScript($exc);
+            // }
 
-            // :: SEND EMAIL NOTIFICATIONS TO PROVIDER AND CUSTOMER
+            // :: SEND EMAIL NOTIFICATIONS TO PROVIDER AND machine
             try
             {
                 $this->config->load('email');
@@ -359,40 +368,40 @@ class Backend_api extends CI_Controller {
 
                 if ( ! $manage_mode)
                 {
-                    $customer_title = new Text($this->lang->line('appointment_booked'));
-                    $customer_message = new Text($this->lang->line('thank_you_for_appointment'));
+                    // $customer_title = new Text($this->lang->line('appointment_booked'));
+                    // $customer_message = new Text($this->lang->line('thank_you_for_appointment'));
                     $provider_title = new Text($this->lang->line('appointment_added_to_your_plan'));
                     $provider_message = new Text($this->lang->line('appointment_link_description'));
                 }
                 else
                 {
-                    $customer_title = new Text($this->lang->line('appointment_changes_saved'));
-                    $customer_message = new Text('');
+                    // $customer_title = new Text($this->lang->line('appointment_changes_saved'));
+                    // $customer_message = new Text('');
                     $provider_title = new Text($this->lang->line('appointment_details_changed'));
                     $provider_message = new Text('');
                 }
 
-                $customer_link = new Url(site_url('appointments/index/' . $appointment['hash']));
+                // $customer_link = new Url(site_url('appointments/index/' . $appointment['hash']));
                 $provider_link = new Url(site_url('backend/index/' . $appointment['hash']));
 
-                $send_customer = $this->settings_model->get_setting('customer_notifications');
+                // $send_customer = $this->settings_model->get_setting('customer_notifications');
 
                 $this->load->library('ics_file');
-                $ics_stream = $this->ics_file->get_stream($appointment, $service, $provider, $customer);
+                // $ics_stream = $this->ics_file->get_stream($appointment, $service, $provider, $machine);
 
-                if ((bool)$send_customer === TRUE)
-                {
-                    $email->sendAppointmentDetails($appointment, $provider,
-                        $service, $customer, $company_settings, $customer_title,
-                        $customer_message, $customer_link, new Email($customer['email']), new Text($ics_stream));
-                }
+                // if ((bool)$send_customer === TRUE)
+                // {
+                    // $email->sendAppointmentDetails($appointment, $provider,
+                        // $service, $customer, $company_settings, $customer_title,
+                        // $customer_message, $customer_link, new Email($customer['email']), new Text($ics_stream));
+                // }
 
-                if ($send_provider == TRUE)
-                {
-                    $email->sendAppointmentDetails($appointment, $provider,
-                        $service, $customer, $company_settings, $provider_title,
-                        $provider_message, $provider_link, new Email($provider['email']), new Text($ics_stream));
-                }
+                // if ($send_provider == TRUE)
+                // {
+                //     $email->sendAppointmentDetails($appointment, $provider,
+                //         $service, $machine, $company_settings, $provider_title,
+                //         $provider_message, $provider_link, new Email($provider['email']), new Text($ics_stream));
+                // }
 
             }
             catch (Exception $exc)
@@ -415,6 +424,8 @@ class Backend_api extends CI_Controller {
         }
         catch (Exception $exc)
         {
+            $firephp->log(122);
+
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode(['exceptions' => [exceptionToJavaScript($exc)]]));
@@ -425,7 +436,7 @@ class Backend_api extends CI_Controller {
      * [AJAX] Delete appointment from the database.
      *
      * This method deletes an existing appointment from the database. Once this action is finished it cannot be undone.
-     * Notification emails are send to both provider and customer and the delete action is executed to the Google
+     * Notification emails are send to both provider and machine and the delete action is executed to the Google
      * Calendar account of the provider, if the "google_sync" setting is enabled.
      *
      * Required POST Parameters:
@@ -449,13 +460,13 @@ class Backend_api extends CI_Controller {
             // :: STORE APPOINTMENT DATA FOR LATER USE IN THIS METHOD
             $this->load->model('appointments_model');
             $this->load->model('providers_model');
-            $this->load->model('customers_model');
+            $this->load->model('machines_model');
             $this->load->model('services_model');
             $this->load->model('settings_model');
 
             $appointment = $this->appointments_model->get_row($this->input->post('appointment_id'));
             $provider = $this->providers_model->get_row($appointment['id_users_provider']);
-            $customer = $this->customers_model->get_row($appointment['id_users_customer']);
+            $machine = $this->machines_model->get_row($appointment['id_users_machines']);
             $service = $this->services_model->get_row($appointment['id_services']);
 
             $company_settings = [
@@ -492,34 +503,34 @@ class Backend_api extends CI_Controller {
             }
 
             // :: SEND NOTIFICATION EMAILS TO PROVIDER AND CUSTOMER
-            try
-            {
-                $this->config->load('email');
-                $email = new \EA\Engine\Notifications\Email($this, $this->config->config);
+            // try
+            // {
+            //     $this->config->load('email');
+            //     $email = new \EA\Engine\Notifications\Email($this, $this->config->config);
 
-                $send_provider = $this->providers_model
-                    ->get_setting('notifications', $provider['id']);
+            //     $send_provider = $this->providers_model
+            //         ->get_setting('notifications', $provider['id']);
 
-                if ((bool)$send_provider === TRUE)
-                {
-                    $email->sendDeleteAppointment($appointment, $provider,
-                        $service, $customer, $company_settings, new Email($provider['email']),
-                        new Text($this->input->post('delete_reason')));
-                }
+            //     if ((bool)$send_provider === TRUE)
+            //     {
+            //         $email->sendDeleteAppointment($appointment, $provider,
+            //             $service, $customer, $company_settings, new Email($provider['email']),
+            //             new Text($this->input->post('delete_reason')));
+            //     }
 
-                $send_customer = $this->settings_model->get_setting('customer_notifications');
+            //     $send_customer = $this->settings_model->get_setting('customer_notifications');
 
-                if ((bool)$send_customer === TRUE)
-                {
-                    $email->sendDeleteAppointment($appointment, $provider,
-                        $service, $customer, $company_settings, new Email($customer['email']),
-                        new Text($this->input->post('delete_reason')));
-                }
-            }
-            catch (Exception $exc)
-            {
-                $warnings[] = exceptionToJavaScript($exc);
-            }
+            //     if ((bool)$send_customer === TRUE)
+            //     {
+            //         $email->sendDeleteAppointment($appointment, $provider,
+            //             $service, $customer, $company_settings, new Email($customer['email']),
+            //             new Text($this->input->post('delete_reason')));
+            //     }
+            // }
+            // catch (Exception $exc)
+            // {
+            //     $warnings[] = exceptionToJavaScript($exc);
+            // }
 
             // :: SEND RESPONSE TO CLIENT BROWSER
             if ( ! isset($warnings))
@@ -643,78 +654,14 @@ class Backend_api extends CI_Controller {
         }
         catch (Exception $exc)
         {
-            require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
-            $f = new FirePHP();
-            $f->log('bob');
+            
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode(['exceptions' => [exceptionToJavaScript($exc)]]));
         }
     }
 
-    /**
-     * [AJAX] Filter the customer records with the given key string.
-     *
-     * Required POST Parameters:
-     *
-     * - string $_POST['key'] The filter key string.
-     *
-     * Outputs the search results.
-     */
-    public function ajax_filter_customers()
-    {
-        try
-        {
-            if ($this->privileges[PRIV_CUSTOMERS]['view'] == FALSE)
-            {
-                throw new Exception('You do not have the required privileges for this task.');
-            }
-
-            $this->load->model('appointments_model');
-            $this->load->model('services_model');
-            $this->load->model('providers_model');
-            $this->load->model('customers_model');
-
-            $key = $this->db->escape_str($this->input->post('key'));
-            $key = strtoupper($key);
-
-            $where_clause =
-                '(first_name LIKE upper("%' . $key . '%") OR ' .
-                'last_name  LIKE upper("%' . $key . '%") OR ' .
-                'email LIKE upper("%' . $key . '%") OR ' .
-                'phone_number LIKE upper("%' . $key . '%") OR ' .
-                'address LIKE upper("%' . $key . '%") OR ' .
-                'city LIKE upper("%' . $key . '%") OR ' .
-                'zip_code LIKE upper("%' . $key . '%") OR ' .
-                'notes LIKE upper("%' . $key . '%"))';
-
-            $customers = $this->customers_model->get_batch($where_clause);
-
-            foreach ($customers as &$customer)
-            {
-                $appointments = $this->appointments_model
-                    ->get_batch(['id_users_customer' => $customer['id']]);
-
-                foreach ($appointments as &$appointment)
-                {
-                    $appointment['service'] = $this->services_model->get_row($appointment['id_services']);
-                    $appointment['provider'] = $this->providers_model->get_row($appointment['id_users_provider']);
-                }
-
-                $customer['appointments'] = $appointments;
-            }
-
-            $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode($customers));
-        }
-        catch (Exception $exc)
-        {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['exceptions' => [exceptionToJavaScript($exc)]]));
-        }
-    }
+   
 
     /**
      * [AJAX] Insert of update unavailable time period to database.
@@ -864,43 +811,7 @@ class Backend_api extends CI_Controller {
         }
     }
 
-    /**
-     * [AJAX] Save (insert or update) a customer record.
-     *
-     * Require POST Parameters:
-     *
-     * - array $_POST['customer'] JSON encoded array that contains the customer's data.
-     */
-    public function ajax_save_customer()
-    {
-        try
-        {
-            $this->load->model('customers_model');
-            $customer = json_decode($this->input->post('customer'), TRUE);
-
-            $REQUIRED_PRIV = ( ! isset($customer['id']))
-                ? $this->privileges[PRIV_CUSTOMERS]['add']
-                : $this->privileges[PRIV_CUSTOMERS]['edit'];
-            if ($REQUIRED_PRIV == FALSE)
-            {
-                throw new Exception('You do not have the required privileges for this task.');
-            }
-
-            $customer_id = $this->customers_model->add($customer);
-            $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode([
-                    'status' => AJAX_SUCCESS,
-                    'id' => $customer_id
-                ]));
-        }
-        catch (Exception $exc)
-        {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['exceptions' => [exceptionToJavaScript($exc)]]));
-        }
-    }
+   
 
      /**
      * [AJAX] Save (insert or update) a machine record.
@@ -923,7 +834,7 @@ class Backend_api extends CI_Controller {
             {
                 throw new Exception('You do not have the required privileges for this task.');
             }
-
+            
             $machine_id = $this->machines_model->add($machine);
             $this->output
                 ->set_content_type('application/json')
@@ -941,35 +852,7 @@ class Backend_api extends CI_Controller {
     }
 
 
-    /**
-     * [AJAX] Delete customer from database.
-     *
-     * Required POST Parameters:
-     *
-     * - int $_POST['customer_id'] Customer record id to be deleted.
-     */
-    public function ajax_delete_customer()
-    {
-        try
-        {
-            if ($this->privileges[PRIV_CUSTOMERS]['delete'] == FALSE)
-            {
-                throw new Exception('You do not have the required privileges for this task.');
-            }
-
-            $this->load->model('customers_model');
-            $this->customers_model->delete($this->input->post('customer_id'));
-            $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode(AJAX_SUCCESS));
-        }
-        catch (Exception $exc)
-        {
-            $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode(['exceptions' => [exceptionToJavaScript($exc)]]));
-        }
-    }
+    
 
     /**
      * [AJAX] Delete machine from database.
@@ -1635,6 +1518,7 @@ class Backend_api extends CI_Controller {
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($is_valid));
+            
         }
         catch (Exception $exc)
         {
