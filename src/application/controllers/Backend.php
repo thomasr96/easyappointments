@@ -140,7 +140,7 @@ class Backend extends CI_Controller {
 
         $view['base_url'] = $this->config->item('base_url');
         
-        // $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
+        $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
         $view['active_menu'] = PRIV_CUSTOMERS;
         $view['machine_types'] = [['id'=> 1, 'type'=>'Aircraft'], 
                                 ['id'=> 2, 'type'=>'Automobile'], 

@@ -18,16 +18,28 @@ services:
     command: dev
     ports:
       - ${APP_HOST}:80:80
-      # - 9000:9000
     environment:
       - DB_HOST=database:3306
-      - APP_URL=35.182.153.85
-    # XDEBUG_CONFIG: 
-    #   - remote_host=host.docker.internal 
-    #   - remote_port=9000 
-    #   - remote_enable=1
+      # - PHP_SITE_NAME: dev
+      # - PHP_HOST_NAME: localhost:8000
+      # - PHP_DOCROOT: drupal # Relative path inside the /var/www/html/ directory.
+      # - PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
+      - PHP_XDEBUG_ENABLED: 1 # Set 1 to enable.
+      - XDEBUG_CONFIG: "remote_host = 172.18.0.3 remote_connect_back = 0"
     depends_on:
       - database
     env_file:
       - .env
     restart: always
+
+
+# version: '3.4'
+
+# services:
+#   easyappointments:
+#     image: easyappointments
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     ports:
+#       - 80
