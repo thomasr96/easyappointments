@@ -8,6 +8,14 @@ VALUES
     (3, 'Machine', 'machine', 0, 0, 0, 0, 0, 0, 0);
 
 INSERT INTO
+    `ea_machine_types` (`machine_type`)
+VALUES
+    ('Aircraft'),
+    ('Automobile'),
+    ('Yacht'),
+    ('Heavy Machinery');
+
+INSERT INTO
     `ea_settings` (`name`, `value`)
 VALUES
     ('company_working_plan',

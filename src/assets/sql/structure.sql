@@ -187,6 +187,14 @@ CREATE TABLE IF NOT EXISTS `ea_user_settings` (
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
 
+CREATE TABLE IF NOT EXISTS `ea_machine_types` (
+    `id_type` INT(11) NOT NULL AUTO_INCREMENT,
+    `machine_type` VARCHAR(256),
+     PRIMARY KEY (`id_type`)
+)
+
+    ENGINE = InnoDB
+    DEFAULT CHARSET = utf8;
 
 ALTER TABLE `ea_appointments`
 --     ADD CONSTRAINT `appointments_users_customer` FOREIGN KEY (`id_users_customer`) REFERENCES `ea_users` (`id`)

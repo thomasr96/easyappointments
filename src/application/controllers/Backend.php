@@ -62,6 +62,7 @@ class Backend extends CI_Controller {
         $this->load->model('services_model');
         // $this->load->model('customers_model');
         $this->load->model('machines_model');
+        $this->load->model('machine_types_model');
         $this->load->model('settings_model');
         $this->load->model('roles_model');
         $this->load->model('user_model');
@@ -72,6 +73,7 @@ class Backend extends CI_Controller {
                                 ['id'=> 3, 'type'=>'Yacht'], 
                                 ['id'=> 4, 'type'=>'Heavy Machinery']];
 
+        $view['machine_types'] = $this->machine_types_model->get_batch();
 
         $view['base_url'] = $this->config->item('base_url');
         $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
@@ -137,15 +139,18 @@ class Backend extends CI_Controller {
         $this->load->model('services_model');
         $this->load->model('settings_model');
         $this->load->model('user_model');
-
+        $this->load->model('machine_types_model');
+        
         $view['base_url'] = $this->config->item('base_url');
         
         $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
         $view['active_menu'] = PRIV_MACHINES;
-        $view['machine_types'] = [['id'=> 1, 'type'=>'Aircraft'], 
-                                ['id'=> 2, 'type'=>'Automobile'], 
-                                ['id'=> 3, 'type'=>'Yacht'], 
-                                ['id'=> 4, 'type'=>'Heavy Machinery']];
+        // $view['machine_types__'] = [['id'=> 1, 'type'=>'Aircraft'], 
+        //                         ['id'=> 2, 'type'=>'Automobile'], 
+        //                         ['id'=> 3, 'type'=>'Yacht'], 
+        //                         ['id'=> 4, 'type'=>'Heavy Machinery']];
+        
+        $view['machine_types'] = $this->machine_types_model->get_batch();
 
 
         $view['company_name'] = $this->settings_model->get_setting('company_name');

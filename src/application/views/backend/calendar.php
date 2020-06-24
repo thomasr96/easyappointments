@@ -234,7 +234,7 @@
                                         <option value='null'>Select a Category</option>
                                         <?php
                                         foreach($machine_types as $machine_type) {
-                                            echo '<option value="' . $machine_type['id'] . '">' . $machine_type['type'] . '</option>';
+                                            echo '<option value="' . $machine_type['id_type'] . '">' . $machine_type['machine_type'] . '</option>';
                                         }
                                         ?>
                                     </select>
