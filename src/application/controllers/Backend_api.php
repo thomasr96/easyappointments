@@ -257,8 +257,8 @@ class Backend_api extends CI_Controller {
     {
         try
         {
-            require __DIR__ . '/../FirePHPCore/FirePHP.class.php';
-        $firephp = new FirePHP;
+
+
             $this->load->model('appointments_model');
             $this->load->model('providers_model');
             $this->load->model('services_model');
@@ -273,8 +273,8 @@ class Backend_api extends CI_Controller {
                 // $machine = ;
                 
                 $REQUIRED_PRIV = ( ! isset($machine['id']))
-                    ? $this->privileges[PRIV_CUSTOMERS]['add']
-                    : $this->privileges[PRIV_CUSTOMERS]['edit'];
+                    ? $this->privileges[PRIV_MACHINES]['add']
+                    : $this->privileges[PRIV_MACHINES]['edit'];
                 if ($REQUIRED_PRIV == FALSE)
                 {
                     throw new Exception('You do not have the required privileges for this task.');
@@ -609,7 +609,7 @@ class Backend_api extends CI_Controller {
     {
         try
         {
-            if ($this->privileges[PRIV_CUSTOMERS]['view'] == FALSE)
+            if ($this->privileges[PRIV_MACHINES]['view'] == FALSE)
             {
                 throw new Exception('You do not have the required privileges for this task.');
             }
@@ -828,8 +828,8 @@ class Backend_api extends CI_Controller {
             $machine = json_decode($this->input->post('machine'), TRUE);
 
             $REQUIRED_PRIV = ( ! isset($machine['id']))
-                ? $this->privileges[PRIV_CUSTOMERS]['add']
-                : $this->privileges[PRIV_CUSTOMERS]['edit'];
+                ? $this->privileges[PRIV_MACHINES]['add']
+                : $this->privileges[PRIV_MACHINES]['edit'];
             if ($REQUIRED_PRIV == FALSE)
             {
                 throw new Exception('You do not have the required privileges for this task.');
@@ -867,7 +867,7 @@ class Backend_api extends CI_Controller {
 
         try
         {
-            if ($this->privileges[PRIV_CUSTOMERS]['delete'] == FALSE)
+            if ($this->privileges[PRIV_MACHINES]['delete'] == FALSE)
             {
                 throw new Exception('You do not have the required privileges for this task.');
             }

@@ -1,11 +1,11 @@
 INSERT INTO
-    `ea_roles` (`id`, `name`, `slug`, `is_admin`, `appointments`, `customers`, `services`, `users`, `system_settings`, `user_settings`)
+    `ea_roles` (`id`, `name`, `slug`, `is_admin`, `appointments`, `machines`, `services`, `users`, `system_settings`, `user_settings`)
 VALUES
     (1, 'Administrator', 'admin', 1, 15, 15, 15, 15, 15, 15),
     (2, 'Provider', 'provider', 0, 15, 15, 0, 0, 0, 15),
-    (3, 'Customer', 'customer', 0, 0, 0, 0, 0, 0, 0),
+    -- (3, 'Customer', 'customer', 0, 0, 0, 0, 0, 0, 0),
     (4, 'Secretary', 'secretary', 0, 15, 15, 0, 0, 0, 15),
-    (5, 'Machine', 'machine', 0, 0, 0, 0, 0, 0, 0);
+    (3, 'Machine', 'machine', 0, 0, 0, 0, 0, 0, 0);
 
 INSERT INTO
     `ea_settings` (`name`, `value`)

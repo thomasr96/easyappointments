@@ -21,7 +21,7 @@ services:
       # - 9000:9000
     environment:
       - DB_HOST=database:3306
-      - APP_URL=35.182.153.85
+      - APP_URL=15.223.24.176
     # XDEBUG_CONFIG: 
     #   - remote_host=host.docker.internal 
     #   - remote_port=9000 

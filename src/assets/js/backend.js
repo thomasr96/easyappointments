@@ -71,7 +71,7 @@ window.Backend = window.Backend || {};
     exports.PRIV_DELETE = 8;
 
     exports.PRIV_APPOINTMENTS = 'appointments';
-    exports.PRIV_CUSTOMERS = 'customers';
+    exports.PRIV_MACHINES = 'machines';
     exports.PRIV_SERVICES = 'services';
     exports.PRIV_USERS = 'users';
     exports.PRIV_SYSTEM_SETTINGS = 'system_settings';

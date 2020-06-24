@@ -58,12 +58,12 @@
                     </a>
                 </li>
 
-                <?php $hidden = ($privileges[PRIV_CUSTOMERS]['view'] == TRUE) ? '' : 'hidden' ?>
-                <?php $active = ($active_menu == PRIV_CUSTOMERS) ? 'active' : '' ?>
+                <?php $hidden = ($privileges[PRIV_MACHINES]['view'] == TRUE) ? '' : 'hidden' ?>
+                <?php $active = ($active_menu == PRIV_MACHINES) ? 'active' : '' ?>
                 <li class="<?= $active . $hidden ?>">
                     <a href="<?= site_url('backend/machines') ?>" class="menu-item"
                             title="<?= lang('manage_customers_hint') ?>">
-                        <?= lang('customers') ?>
+                        Machines
                     </a>
                 </li>
 

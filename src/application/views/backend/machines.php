@@ -52,21 +52,21 @@
     	<div class="record-details col-xs-12 col-sm-7">
             <div class="btn-toolbar">
                 <div id="add-edit-delete-group" class="btn-group">
-                    <?php if ($privileges[PRIV_CUSTOMERS]['add'] === TRUE): ?>
+                    <?php if ($privileges[PRIV_MACHINES]['add'] === TRUE): ?>
                     <button id="add-customer" class="btn btn-primary">
                         <span class="glyphicon glyphicon-plus"></span>
                         <?= lang('add') ?>
                     </button>
                     <?php endif ?>
 
-                    <?php if ($privileges[PRIV_CUSTOMERS]['edit'] === TRUE): ?>
+                    <?php if ($privileges[PRIV_MACHINES]['edit'] === TRUE): ?>
                     <button id="edit-customer" class="btn btn-default" disabled="disabled">
                         <span class="glyphicon glyphicon-pencil"></span>
                         <?= lang('edit') ?>
                     </button>
                     <?php endif ?>
 
-                    <?php if ($privileges[PRIV_CUSTOMERS]['delete'] === TRUE): ?>
+                    <?php if ($privileges[PRIV_MACHINES]['delete'] === TRUE): ?>
                     <button id="delete-customer" class="btn btn-default" disabled="disabled">
                         <span class="glyphicon glyphicon-remove"></span>
                             <?= lang('delete') ?>

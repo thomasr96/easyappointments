@@ -10,13 +10,13 @@ CREATE TABLE IF NOT EXISTS `ea_appointments` (
     `hash` TEXT,
     `is_unavailable` TINYINT(4) DEFAULT '0',
     `id_users_provider` INT(11),
-    `id_users_customer` INT(11),
+    `id_users_machine` INT(11),
     `id_services` INT(11),
     `id_google_calendar` TEXT,
     PRIMARY KEY (`id`),
-    KEY `id_users_customer` (`id_users_customer`),
     KEY `id_services` (`id_services`),
-    KEY `id_users_provider` (`id_users_provider`)
+    KEY `id_users_provider` (`id_users_provider`),
+    KEY `id_users_machine` (`id_users_machine`)
 )
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8;
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `ea_roles` (
     `slug` VARCHAR(256),
     `is_admin` TINYINT(4),
     `appointments` INT(11),
-    `customers` INT(11),
+    `machines` INT(11),
     `services` INT(11),
     `users` INT(11),
     `system_settings` INT(11),
@@ -160,8 +160,8 @@ ADD CONSTRAINT `machines_roles` FOREIGN KEY (`id_roles`) REFERENCES `ea_roles` (
 ON DELETE CASCADE
 ON UPDATE CASCADE;
 
-ALTER TABLE `ea_appointments`
-ADD `id_users_machine` INT(11);
+-- ALTER TABLE `ea_appointments`
+-- ADD `id_users_machine` INT(11);
 
 ALTER TABLE `ea_appointments`
     ADD CONSTRAINT `appointments_machine` FOREIGN KEY (`id_users_machine`) REFERENCES `ea_machines` (`id`)
@@ -189,9 +189,9 @@ CREATE TABLE IF NOT EXISTS `ea_user_settings` (
 
 
 ALTER TABLE `ea_appointments`
-    ADD CONSTRAINT `appointments_users_customer` FOREIGN KEY (`id_users_customer`) REFERENCES `ea_users` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
+--     ADD CONSTRAINT `appointments_users_customer` FOREIGN KEY (`id_users_customer`) REFERENCES `ea_users` (`id`)
+--     ON DELETE CASCADE
+--     ON UPDATE CASCADE,
     ADD CONSTRAINT `appointments_services` FOREIGN KEY (`id_services`) REFERENCES `ea_services` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,

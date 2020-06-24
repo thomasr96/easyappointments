@@ -60,7 +60,7 @@ class Backend extends CI_Controller {
         $this->load->model('appointments_model');
         $this->load->model('providers_model');
         $this->load->model('services_model');
-        $this->load->model('customers_model');
+        // $this->load->model('customers_model');
         $this->load->model('machines_model');
         $this->load->model('settings_model');
         $this->load->model('roles_model');
@@ -126,7 +126,7 @@ class Backend extends CI_Controller {
     {
         $this->session->set_userdata('dest_url', site_url('backend/machines'));
 
-        if ( ! $this->_has_privileges(PRIV_CUSTOMERS))
+        if ( ! $this->_has_privileges(PRIV_MACHINES))
         {
             return;
         }
@@ -141,7 +141,7 @@ class Backend extends CI_Controller {
         $view['base_url'] = $this->config->item('base_url');
         
         $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
-        $view['active_menu'] = PRIV_CUSTOMERS;
+        $view['active_menu'] = PRIV_MACHINES;
         $view['machine_types'] = [['id'=> 1, 'type'=>'Aircraft'], 
                                 ['id'=> 2, 'type'=>'Automobile'], 
                                 ['id'=> 3, 'type'=>'Yacht'], 
